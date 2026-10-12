@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Практические задания по JavaScript №86–110</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--tx:#1d2330;--mu:#5d6678;--ac:#1f5fbf;--ln:#d9dde5}
+@media (prefers-color-scheme:dark){:root{--bg:#14171d;--card:#1c2029;--tx:#e6e9ef;--mu:#9aa3b5;--ac:#6ea0ff;--ln:#2c3240}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 Georgia,"Times New Roman",serif}
+main{max-width:860px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.7rem;margin:0 0 4px}
+.sub{color:var(--mu);margin:0 0 24px}
+h3{margin:36px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--ac);font-size:1.2rem}
+section{background:var(--card);border:1px solid var(--ln);border-radius:8px;padding:14px 16px;margin:0 0 14px}
+h2{font-size:1rem;margin:0 0 8px}
+pre{margin:0;white-space:pre-wrap;word-break:break-word;font:14px/1.45 Consolas,Menlo,monospace;color:var(--mu)}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+input,select,button{font:inherit;padding:6px 10px;border:1px solid var(--ln);border-radius:6px;background:var(--bg);color:var(--tx)}
+button{background:var(--ac);color:#fff;border-color:var(--ac);cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+#ck{font:700 2.4rem Consolas,monospace}
+table{border-collapse:collapse;width:100%}
+td,th{border:1px solid var(--ln);padding:6px 10px;text-align:left}
+.lead{font-weight:700;color:var(--ac)}
+label{display:block;margin:2px 0}
+</style>
+</head>
+<body>
+<main>
+<h1>Практические задания по JavaScript №86–110</h1>
+<p class="sub">Результаты заданий 86–105 выводятся на странице и в консоль (F12 → Console). Задания 106–110 — интерактивные.</p>
+<div id="app"></div>
+</main>
+<script>
+const app = document.getElementById('app');
+const $ = id => document.getElementById(id);
+const H = t => { const h = document.createElement('h3'); h.textContent = t; app.append(h); };
+function T(n, title, fn) {
+  const d = document.createElement('section');
+  d.innerHTML = `<h2>Задание ${n}. ${title}</h2><pre></pre>`;
+  app.append(d);
+  const pre = d.querySelector('pre');
+  const log = (...a) => {
+    const s = a.map(x => typeof x === 'object' ? JSON.stringify(x) : x).join(' ');
+    pre.textContent += s + '\n';
+    console.log(`[${n}]`, s);
+  };
+  fn(log, d);
+  if (!pre.textContent) pre.remove();
+}
+
+/* ---------- Уровень A ---------- */
+H('Уровень A — Условные операторы');
+
+T(86, 'Проверка свободного места на диске', log => {
+  function check(f) {
+    if (f < 0) return 'Ошибка: значение не может быть отрицательным';
+    else if (f < 5) return 'Критически мало памяти';
+    else if (f < 20) return 'Мало свободного места';
+    else if (f < 100) return 'Достаточно места';
+    else return 'Много свободного места';
+  }
+  let freeSpace = 18;
+  log(`${freeSpace} ГБ → ${check(freeSpace)}`);
+  [3, 15, 50, 150, -2].forEach(v => log(`${v} ГБ → ${check(v)}`));
+});
+
+T(87, 'Определение уровня пользователя', log => {
+  function level(p) {
+    if (p < 0) return 'Ошибка: баллы не могут быть отрицательными';
+    else if (p <= 99) return 'Новичок';
+    else if (p <= 299) return 'Пользователь';
+    else if (p <= 599) return 'Продвинутый';
+    else return 'Эксперт';
+  }
+  let points = 350;
+  log(`${points} → ${level(points)}`);
+  [99, 100, 299, 300, 600].forEach(v => log(`${v} → ${level(v)}`));
+});
+
+T(88, 'Расчёт платы за парковку', log => {
+  function parking(hours) {
+    if (!(hours > 0) || hours > 24) return 'Ошибка: время должно быть от 0 до 24 часов';
+    const h = Math.ceil(hours);
+    const sum = 300 + (h - 1) * 200;
+    return Math.min(sum, 2000) + ' ₸';
+  }
+  let hours = 5;
+  log(`${hours} ч → ${parking(hours)}`);
+  [0.5, 2.3, 10, 24, 0, 30].forEach(v => log(`${v} ч → ${parking(v)}`));
+});
+
+T(89, 'Определение сезона', log => {
+  function season(m) {
+    switch (m) {
+      case 12: case 1: case 2: return 'Зима';
+      case 3: case 4: case 5: return 'Весна';
+      case 6: case 7: case 8: return 'Лето';
+      case 9: case 10: case 11: return 'Осень';
+      default: return 'Ошибка: месяц должен быть от 1 до 12';
+    }
+  }
+  let month = 10;
+  log(`${month} → ${season(month)}`);
+  [12, 3, 7, 13].forEach(v => log(`${v} → ${season(v)}`));
+});
+
+T(90, 'Проверка температуры сервера', log => {
+  function state(t) {
+    if (t < 40) return 'Нормальная температура';
+    else if (t < 70) return 'Повышенная температура';
+    else { console.warn('Внимание: перегрев сервера!'); return 'Опасный перегрев ⚠'; }
+  }
+  let temperature = 65;
+  log(`${temperature}°C → ${state(temperature)}`);
+  [30, 40, 69, 70, 85].forEach(v => log(`${v}°C → ${state(v)}`));
+});
+
+/* ---------- Уровень B ---------- */
+H('Уровень B — Циклы и массивы');
+
+T(91, 'Сумма чисел, кратных трём (1–60)', log => {
+  let sum = 0, count = 0;
+  for (let i = 1; i <= 60; i++) if (i % 3 === 0) { sum += i; count++; }
+  log('Сумма:', sum, '| Количество:', count);
+});
+
+T(92, 'Вторая по величине оценка', log => {
+  let scores = [75, 92, 88, 65, 98, 83];
+  const sorted = [...scores].sort((a, b) => b - a);
+  log('По убыванию:', sorted, '→ вторая:', sorted[1]);
+  const dup = [98, 98, 92, 88];
+  const uniq = [...new Set(dup)].sort((a, b) => b - a);
+  log('Массив с повтором', dup, '→ второе уникальное:', uniq[1]);
+});
+
+T(93, 'Подсчёт букв «a»', log => {
+  const text = 'javascript programming';
+  let count = 0;
+  for (let i = 0; i < text.length; i++) if (text[i] === 'a') count++;
+  log(`В строке "${text}" буква a встречается ${count} раз(а)`);
+});
+
+T(94, 'Товары дороже 10 000 ₸', log => {
+  let prices = [5000, 12000, 8000, 25000, 17000, 3000];
+  const exp = prices.filter(p => p > 10000);
+  log('Массив:', exp, '| Количество:', exp.length, '| Сумма:', exp.reduce((s, p) => s + p, 0), '₸');
+});
+
+T(95, 'Квадраты чисел от 1 до 15', log => {
+  const squares = [];
+  for (let i = 1; i <= 15; i++) squares.push(i * i);
+  log(squares);
+});
+
+T(96, 'Анализ оценок группы', log => {
+  let grades = [95, 78, 45, 88, 67, 92, 35, 74, 81, 50];
+  const avg = grades.reduce((s, g) => s + g, 0) / grades.length;
+  log('Средний балл:', avg);
+  log('Результатов от 90:', grades.filter(g => g >= 90).length);
+  log('Результатов ниже 50:', grades.filter(g => g < 50).length);
+  log('Максимум:', Math.max(...grades), '| Минимум:', Math.min(...grades));
+});
+
+T(97, 'Удаление отрицательных чисел', log => {
+  let numbers = [-4, 8, -12, 15, 0, 22, -3, 9];
+  const res = numbers.filter(n => n >= 0);
+  log('Исходный:', numbers);
+  log('Без отрицательных:', res);
+  log('Исключено элементов:', numbers.length - res.length);
+});
+
+T(98, 'Таблица степеней двойки', log => {
+  for (let i = 0; i <= 10; i++) log(`2^${i} = ${2 ** i}`);
+});
+
+/* ---------- Уровень C ---------- */
+H('Уровень C — Функции и объекты');
+
+T(99, 'Расчёт НДС', log => {
+  function calculateTax(price, taxRate) {
+    if (!(price >= 0) || !(taxRate >= 0)) return NaN;
+    return price * taxRate / 100;
+  }
+  const price = 100000, taxRate = 12;
+  const tax = calculateTax(price, taxRate);
+  log('Налог:', tax, '₸');
+  log('Цена с налогом:', price + tax, '₸');
+  log('Некорректный ввод (-5):', calculateTax(-5, 12));
+});
+
+T(100, 'Конвертер времени', log => {
+  function convertTime(seconds) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return { h, m, s };
+  }
+  const totalSeconds = 3675;
+  const r = convertTime(totalSeconds);
+  log(`${totalSeconds} с = ${r.h} ч ${r.m} мин ${r.s} сек`);
+});
+
+T(101, 'Каталог мобильных телефонов', log => {
+  let phones = [
+    {name: 'Samsung', price: 280000, stock: 5},
+    {name: 'Xiaomi', price: 160000, stock: 12},
+    {name: 'Apple', price: 520000, stock: 3},
+    {name: 'Honor', price: 190000, stock: 8}
+  ];
+  phones.forEach(p => log(`${p.name}: ${p.price} ₸, на складе ${p.stock} шт.`));
+  const top = phones.reduce((a, b) => b.price > a.price ? b : a);
+  log('Самый дорогой:', top.name);
+  log('Дешевле 200 000 ₸:', phones.filter(p => p.price < 200000).map(p => p.name).join(', '));
+  log('Всего телефонов:', phones.reduce((s, p) => s + p.stock, 0));
+  log('Стоимость склада:', phones.reduce((s, p) => s + p.price * p.stock, 0), '₸');
+});
+
+T(102, 'Статистика успеваемости', log => {
+  function analyzeScores(scores) {
+    const passed = scores.filter(s => s >= 50).length;
+    return {
+      average: scores.reduce((a, b) => a + b, 0) / scores.length,
+      passed,
+      failed: scores.length - passed,
+      successRate: passed / scores.length * 100 + '%'
+    };
+  }
+  log(analyzeScores([95, 78, 45, 88, 67, 92, 35, 74, 81, 50]));
+});
+
+T(103, 'Генератор идентификаторов', log => {
+  let idCounter = 0;
+  function generateStudentId() {
+    idCounter++;
+    return 'ST-' + String(idCounter).padStart(4, '0');
+  }
+  for (let i = 0; i < 5; i++) log(generateStudentId());
+});
+
+T(104, 'Проверка сложности пароля', log => {
+  function checkPasswordStrength(p) {
+    if (p.length < 8) return 'слабый';
+    const L = /[A-Za-zА-Яа-яЁё]/.test(p), D = /\d/.test(p), S = /[^A-Za-zА-Яа-яЁё\d\s]/.test(p);
+    if (L && D && S) return 'сложный';
+    if (L && D) return 'хороший';
+    if (L && !S) return 'средний';
+    return 'слабый';
+  }
+  ['abc12', 'password', 'pass1234', 'Pass#1234', '12345678'].forEach(p => log(`${p} → ${checkPasswordStrength(p)}`));
+});
+
+T(105, 'Учёт библиотечных книг', log => {
+  let books = [
+    {id: 1, title: 'JavaScript', copies: 5},
+    {id: 2, title: 'Python', copies: 3},
+    {id: 3, title: 'HTML', copies: 7},
+    {id: 4, title: 'SQL', copies: 2}
+  ];
+  const findBook = id => books.find(b => b.id === id);
+  function issueBook(id) {
+    const b = findBook(id);
+    if (!b) return log('Книга не найдена');
+    if (b.copies === 0) return log(`Предупреждение: «${b.title}» — экземпляров нет`);
+    b.copies--;
+    log(`Выдана: ${b.title}`);
+  }
+  function returnBook(id) {
+    const b = findBook(id);
+    if (!b) return log('Книга не найдена');
+    b.copies++;
+    log(`Возвращена: ${b.title}`);
+  }
+  issueBook(4); issueBook(4); issueBook(4); returnBook(4); issueBook(1);
+  books.forEach(b => log(`${b.id}. ${b.title} — ${b.copies} шт.`));
+});
+
+/* ---------- Уровень D ---------- */
+H('Уровень D — Интерактивные веб-проекты');
+
+T(106, 'Калькулятор скидок', (l, d) => {
+  d.insertAdjacentHTML('beforeend', `<div class="row"><input id="dp" type="number" placeholder="Цена, ₸"><input id="dd" type="number" placeholder="Скидка, %"><button id="dc">Рассчитать</button><button id="dx">Очистить</button></div><p id="dr"></p>`);
+  $('dc').onclick = () => {
+    const p = parseFloat($('dp').value), s = parseFloat($('dd').value);
+    if (!(p > 0) || isNaN(s) || s < 0 || s > 100) { $('dr').textContent = 'Введите цену больше 0 и скидку от 0 до 100'; return; }
+    const k = p * s / 100;
+    $('dr').textContent = `Скидка: ${k.toFixed(2)} ₸. Итоговая цена: ${(p - k).toFixed(2)} ₸`;
+  };
+  $('dx').onclick = () => { $('dp').value = $('dd').value = ''; $('dr').textContent = ''; };
+});
+
+T(107, 'Цифровые часы', (l, d) => {
+  d.insertAdjacentHTML('beforeend', `<div id="ck"></div><div id="cd"></div>`);
+  const p2 = n => String(n).padStart(2, '0');
+  const tick = () => {
+    const t = new Date();
+    $('ck').textContent = `${p2(t.getHours())}:${p2(t.getMinutes())}:${p2(t.getSeconds())}`;
+    $('cd').textContent = t.toLocaleDateString('ru-RU', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
+  };
+  tick();
+  setInterval(tick, 1000);
+});
+
+T(108, 'Игра «Угадай число»', (l, d) => {
+  d.insertAdjacentHTML('beforeend', `<div class="row"><input id="gi" type="number" placeholder="От 1 до 100"><button id="gb">Проверить</button><button id="gn">Новая игра</button></div><p id="gm"></p>`);
+  let secret, tries;
+  const newGame = () => {
+    secret = 1 + Math.floor(Math.random() * 100);
+    tries = 0;
+    $('gi').value = '';
+    $('gm').textContent = 'Число загадано. Попробуйте угадать.';
+  };
+  $('gb').onclick = () => {
+    const v = parseInt($('gi').value);
+    if (!(v >= 1 && v <= 100)) { $('gm').textContent = 'Введите целое число от 1 до 100'; return; }
+    tries++;
+    $('gm').textContent = v === secret ? `Верно! Попыток: ${tries}` : v < secret ? 'Больше' : 'Меньше';
+  };
+  $('gn').onclick = newGame;
+  newGame();
+});
+
+T(109, 'Электронный опрос', (l, d) => {
+  const langs = ['JavaScript', 'Python', 'Java', 'C++'];
+  let votes = null;
+  try { votes = JSON.parse(localStorage.getItem('votes109')); } catch (e) {}
+  if (!votes) votes = Object.fromEntries(langs.map(x => [x, 0]));
+  d.insertAdjacentHTML('beforeend',
+    langs.map(x => `<label><input type="radio" name="lang" value="${x}"> ${x}</label>`).join('') +
+    `<div class="row" style="margin-top:8px"><button id="vb">Голосовать</button></div><div id="vr"></div>
+     <p style="color:var(--mu);font-size:.9rem">Результаты хранятся в localStorage этого браузера — для защищённого общего голосования не подходят.</p>`);
+  const render = () => {
+    const max = Math.max(...Object.values(votes));
+    $('vr').innerHTML = langs.map(x => `<div class="${votes[x] === max && max > 0 ? 'lead' : ''}">${x}: ${votes[x]}</div>`).join('');
+  };
+  $('vb').onclick = () => {
+    const c = d.querySelector('input[name=lang]:checked');
+    if (!c) { $('vr').textContent = 'Сначала выберите вариант'; return; }
+    votes[c.value]++;
+    try { localStorage.setItem('votes109', JSON.stringify(votes)); } catch (e) {}
+    render();
+  };
+  render();
+});
+
+T(110, 'Расписание занятий', (l, d) => {
+  let schedule = [
+    {day: 'Понедельник', subject: 'JavaScript', time: '08:30'},
+    {day: 'Понедельник', subject: 'HTML и CSS', time: '10:10'},
+    {day: 'Вторник', subject: 'Базы данных', time: '08:30'},
+    {day: 'Среда', subject: 'Программирование', time: '12:00'}
+  ];
+  const days = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница'];
+  let sortByTime = false;
+  d.insertAdjacentHTML('beforeend', `<div class="row"><select id="sd">${days.map(x => `<option>${x}</option>`).join('')}</select><button id="ss">Сортировать по времени</button></div><table id="st"></table>`);
+  const render = () => {
+    const r = schedule.filter(x => x.day === $('sd').value);
+    if (sortByTime) r.sort((a, b) => a.time.localeCompare(b.time));
+    $('st').innerHTML = r.length
+      ? '<tr><th>Предмет</th><th>Время</th></tr>' + r.map(x => `<tr><td>${x.subject}</td><td>${x.time}</td></tr>`).join('')
+      : '<tr><td>На выбранный день занятий нет</td></tr>';
+  };
+  $('sd').onchange = render;
+  $('ss').onclick = () => { sortByTime = true; render(); };
+  render();
+});
+</script>
+</body>
+</html>
